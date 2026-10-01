@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Alguien Inolvidable ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --romantic-rose: #d64a75;
+      --romantic-crimson: #8a1f3d;
+      --romantic-gold: #c89d51;
+      --parchment-bg: #fffdf9;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 25%, #ffeef2 0%, #ffdbe4 45%, #f7b4c6 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1200px;
+    }
+
+    .font-script {
+      font-family: 'Great Vibes', cursive;
+    }
+
+    .font-editorial {
+      font-family: 'Playfair Display', serif;
+    }
+
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 3D Envelope Construction */
+    .envelope-box {
+      perspective: 1000px;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .envelope-box:hover {
+      transform: scale(1.025) translateY(-4px);
+    }
+
+    .envelope {
+      position: relative;
+      width: 320px;
+      height: 220px;
+      background: #c74368;
+      border-radius: 12px;
+      box-shadow: 0 24px 50px rgba(122, 19, 48, 0.32);
+    }
+    @media (min-width: 640px) {
+      .envelope {
+        width: 410px;
+        height: 260px;
+      }
+    }
+
+    /* Side and bottom envelope flaps */
+    .envelope::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 130px 205px;
+      border-color: transparent transparent #a82e50 transparent;
+      z-index: 4;
+      border-bottom-left-radius: 12px;
+    }
+    @media (max-width: 639px) {
+      .envelope::before {
+        border-width: 0 0 110px 160px;
+      }
+    }
+
+    .envelope::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 205px 130px 0;
+      border-color: transparent transparent #992544 transparent;
+      z-index: 4;
+      border-bottom-right-radius: 12px;
+    }
+    @media (max-width: 639px) {
+      .envelope::after {
+        border-width: 0 160px 110px 0;
+      }
+    }
+
+    .envelope-top-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 140px 205px 0 205px;
+      border-color: #ba385d transparent transparent transparent;
+      transform-origin: top;
+      transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.3s;
+      z-index: 5;
+    }
+    @media (max-width: 639px) {
+      .envelope-top-flap {
+        border-width: 115px 160px 0 160px;
+      }
+    }
+
+    .envelope.opened .envelope-top-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 110px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 66px;
+      height: 66px;
+      background: radial-gradient(circle, #e63963, #8c102c);
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(92, 9, 29, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255, 215, 0, 0.6);
+      animation: pulseSeal 2s infinite ease-in-out;
+      cursor: pointer;
+    }
+    @media (max-width: 639px) {
+      .wax-seal {
+        top: 92px;
+        width: 58px;
+        height: 58px;
+      }
+    }
+
+    @keyframes pulseSeal {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 10px 25px rgba(230, 57, 99, 0.7); }
+    }
+
+    /* Elegant Parchment Paper */
+    .parchment-sheet {
+      background: var(--parchment-bg);
+      background-image: 
+        radial-gradient(#f3dfd6 15%, transparent 16%),
+        radial-gradient(#faebe3 15%, transparent 16%);
+      background-size: 26px 26px;
+      background-position: 0 0, 13px 13px;
+      box-shadow: 0 20px 50px rgba(107, 24, 48, 0.16), 0 0 0 1px rgba(200, 157, 81, 0.35);
+    }
+
+    /* 3D Flip Card Effect */
+    .card-3d-wrap {
+      perspective: 1000px;
+    }
+    .card-3d-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .card-3d-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-side-front, .card-side-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 16px;
+    }
+    .card-side-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Wave visualizer bars */
+    .audio-bar {
+      width: 3px;
+      border-radius: 9999px;
+      background-color: #d64a75;
+      animation: soundWave 1.1s ease-in-out infinite;
+    }
+    .audio-bar:nth-child(1) { animation-delay: 0.1s; height: 12px; }
+    .audio-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
+    .audio-bar:nth-child(3) { animation-delay: 0.2s; height: 10px; }
+    .audio-bar:nth-child(4) { animation-delay: 0.4s; height: 16px; }
+
+    @keyframes soundWave {
+      0%, 100% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1.2); }
+    }
+    .audio-bar.paused {
+      animation-play-state: paused;
+      transform: scaleY(0.3);
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 relative select-none">
+
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Audio element targeting your specific musica.mp3.mp3 file in VSCode -->
+  <audio id="main-romantic-audio" loop preload="auto">
+    <source src="musica.mp3.mp3" type="audio/mpeg">
+    <source src="./musica.mp3.mp3" type="audio/mpeg">
+    <!-- Extra fallback if renamed to standard .mp3 -->
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Floating Audio Status Pill in Top Corner -->
+  <div id="audio-pill" class="fixed top-4 right-4 z-50 flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-pink-200 text-xs text-rose-900 transition-all hover:shadow-lg">
+    <div id="wave-container" class="flex items-center gap-0.5 h-5 px-1">
+      <span class="audio-bar paused"></span>
+      <span class="audio-bar paused"></span>
+      <span class="audio-bar paused"></span>
+      <span class="audio-bar paused"></span>
+    </div>
+    <button id="toggle-audio-btn" class="font-medium hover:text-rose-600 transition" title="Tocar para pausar o reanudar">
+      <span id="audio-status-label">Música pausada</span>
+    </button>
+  </div>
+
+  <main class="w-full max-w-xl z-10 my-auto flex flex-col items-center">
+
+    <!-- ================= SCENE 0: ENVELOPE (FIRST CLICK) ================= -->
+    <section id="scene-envelope" class="flex flex-col items-center text-center transition-all duration-700 py-6">
+      <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur px-4 py-1 rounded-full border border-rose-200 text-rose-800 text-xs font-semibold tracking-wider uppercase mb-4 shadow-sm animate-pulse">
+        <span>💌</span> Para mi persona especial
+      </div>
+
+      <h1 class="font-script text-5xl sm:text-6xl text-rose-900 mb-6 drop-shadow-sm">
+        Tiene una Carta
+      </h1>
+
+      <div class="envelope-box my-2" onclick="openEnvelopeExperience()">
+        <div class="envelope" id="envelope-elem">
+          <div class="envelope-top-flap" id="envelope-flap"></div>
+          <div class="wax-seal" id="wax-seal-btn" title="Haz clic para abrir">
+            <span class="text-amber-200 text-2xl font-bold">❤</span>
+          </div>
+          <div class="absolute left-6 right-6 top-8 bottom-3 bg-amber-50 rounded-t-lg shadow-inner flex flex-col items-center justify-center p-4 border border-rose-200 opacity-90">
+            <p class="font-script text-2xl text-rose-700">Toca el sello para abrir...</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-rose-900/80 text-xs sm:text-sm mt-7 font-light max-w-xs leading-relaxed">
+        Haz clic en el corazón para abrir la carta </span> ✨
+      </p>
+    </section>
+
+    <!-- ================= SCENE 1: LETTER CHAPTER ================= -->
+    <section id="scene-letter" class="hidden w-full parchment-sheet rounded-3xl p-6 sm:p-10 border border-amber-200/80 relative transition-all duration-500 transform scale-95 opacity-0">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-rose-100 text-xs text-rose-700">
+        <span class="font-semibold tracking-wider uppercase text-[10px] bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full">Capítulo I</span>
+        <span class="italic text-rose-500">Desde mi corazón para usted</span>
+      </div>
+
+      <h2 class="font-script text-4xl sm:text-5xl text-rose-900 text-center mb-4">Lo que significa para mí</h2>
+
+      <div id="typewriter-box" class="text-gray-700 text-sm sm:text-base leading-relaxed space-y-4 font-normal min-h-[140px]">
+        <p>Antes de conocerla yo no creia en el amor, pensaba que eso no era para mí, que nunca conseguiria a alguien que valiera la pena.</p>
+        <p>Hasta que llego a mi  vida y en tres años me dio más amor de lo que habia recibido nunca, entoces descubri que no es el tiempo es la persona.</p>
+        <p class="italic text-rose-800">Y por eso le amo como no se lo imagina.</p>
+      </div>
+
+      <div class="mt-8 pt-4 border-t border-rose-100 flex items-center justify-between">
+        <span class="text-xs text-rose-400 font-light">Página 1 de 3</span>
+        <button onclick="goToScene('scene-polaroids')" class="bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-full shadow hover:shadow-lg hover:from-rose-600 hover:to-pink-700 transition flex items-center gap-1.5">
+          <span>Ver Recuerdos</span>
+          <span>→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= SCENE 2: INTERACTIVE POLAROIDS ================= -->
+    <section id="scene-polaroids" class="hidden w-full parchment-sheet rounded-3xl p-6 sm:p-8 border border-amber-200/80 relative transition-all duration-500 transform scale-95 opacity-0">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-rose-100 text-xs text-rose-700">
+        <span class="font-semibold tracking-wider uppercase text-[10px] bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full">Capítulo II</span>
+        <span class="italic text-rose-500">Toca cada tarjetita</span>
+      </div>
+
+      <h2 class="font-script text-4xl sm:text-5xl text-rose-900 text-center mb-1">Pequeños Recuerdos</h2>
+      <p class="text-xs text-rose-600 text-center mb-6">Descubra lo que guardo de usted haciendo clic</p>
+
+      <!-- 3 Interactive Flip Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
+        
+        <!-- Card 1 -->
+        <div class="card-3d-wrap h-48">
+          <div class="card-3d-inner bg-white border border-rose-100 rounded-2xl p-2 shadow-sm" onclick="flipCard(this)">
+            <div class="card-side-front flex flex-col items-center justify-center p-3 bg-gradient-to-b from-white to-pink-50">
+              <span class="text-3xl mb-2">✨</span>
+              <h3 class="font-editorial font-semibold text-rose-900 text-sm text-center">Su Risa</h3>
+              <p class="text-[11px] text-rose-400 mt-2 font-light">Toque para leer</p>
+            </div>
+            <div class="card-side-back flex flex-col items-center justify-center p-4 bg-rose-600 text-white text-center">
+              <p class="text-xs font-light leading-relaxed">
+                Que tiene el superpoder de arreglar cualquier día difícil en un solo segundo.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card-3d-wrap h-48">
+          <div class="card-3d-inner bg-white border border-rose-100 rounded-2xl p-2 shadow-sm" onclick="flipCard(this)">
+            <div class="card-side-front flex flex-col items-center justify-center p-3 bg-gradient-to-b from-white to-pink-50">
+              <span class="text-3xl mb-2">🌷</span>
+              <h3 class="font-editorial font-semibold text-rose-900 text-sm text-center">Su Forma de Ser</h3>
+              <p class="text-[11px] text-rose-400 mt-2 font-light">Toque para leer</p>
+            </div>
+            <div class="card-side-back flex flex-col items-center justify-center p-4 bg-pink-700 text-white text-center">
+              <p class="text-xs font-light leading-relaxed">
+                Tan tierna, atenta y auténtica. Me encanta la persona que es, gracias por existir.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card-3d-wrap h-48">
+          <div class="card-3d-inner bg-white border border-rose-100 rounded-2xl p-2 shadow-sm" onclick="flipCard(this)">
+            <div class="card-side-front flex flex-col items-center justify-center p-3 bg-gradient-to-b from-white to-pink-50">
+              <span class="text-3xl mb-2">💫</span>
+              <h3 class="font-editorial font-semibold text-rose-900 text-sm text-center">Mi Promesa</h3>
+              <p class="text-[11px] text-rose-400 mt-2 font-light">Toque para leer</p>
+            </div>
+            <div class="card-side-back flex flex-col items-center justify-center p-4 bg-rose-800 text-white text-center">
+              <p class="text-xs font-light leading-relaxed">
+                De sin importar nada cuidar con amor el espacio enorme que tiene en mi mente y corazon.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-rose-100 flex items-center justify-between">
+        <button onclick="goToScene('scene-letter')" class="text-xs text-rose-600 hover:text-rose-800 font-medium">
+          ← Volver a la carta
+        </button>
+        <button onclick="goToScene('scene-final')" class="bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-full shadow hover:shadow-lg transition flex items-center gap-1.5">
+          <span>Última Página</span>
+          <span>→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= SCENE 3: FINAL QUESTION & CONFETTI ================= -->
+    <section id="scene-final" class="hidden w-full parchment-sheet rounded-3xl p-6 sm:p-10 border border-amber-200/80 text-center relative transition-all duration-500 transform scale-95 opacity-0">
+      <div class="inline-flex items-center gap-1.5 bg-rose-100 text-rose-800 text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full mb-3">
+        <span>🌹</span> Y por último
+      </div>
+
+      <h2 class="font-script text-4xl sm:text-6xl text-rose-900 mb-3">Feliz Día De La Novia</h2>
+
+      <p class="text-gray-700 text-sm sm:text-base leading-relaxed max-w-md mx-auto mb-8 font-light">
+        Y si se que no es mi novia pero se que cuando lo era, era la mejor del mundo y es por eso que le digo esto hoy.
+      </p>
+
+      <p class="text-gray-700 text-sm sm:text-base leading-relaxed max-w-md mx-auto mb-8 font-light">
+        Porque para mi usted siempre va a tener ese titulo y espacio en mi corazon asi no estemos juntos.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <button onclick="celebrateLove()" class="w-full sm:w-auto bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white text-sm sm:text-base font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-pink-400/50 hover:scale-105 active:scale-95 transition">
+          ¡Le amo muchísimo! ❤️
+        </button>
+      </div>
+
+      <div id="hidden-love-quote" class="mt-6 opacity-0 transition-opacity duration-700 text-rose-900 font-script text-3xl sm:text-4xl">
+        ¡De aqui a la luna a pasitos de tortuga! 🐢💖
+      </div>
+
+      <div class="mt-8 pt-4 border-t border-rose-100 flex justify-center">
+        <button onclick="restartLetter()" class="text-xs text-rose-600 hover:text-rose-800 transition">
+          ↺ Volver al sobre inicial
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Audio Player References
+    const audio = document.getElementById('main-romantic-audio');
+    const audioLabel = document.getElementById('audio-status-label');
+    const waveBars = document.querySelectorAll('.audio-bar');
+    const toggleBtn = document.getElementById('toggle-audio-btn');
+
+    let audioInitialized = false;
+
+    // Resilient play trigger to overcome browser autoplay blocks
+    function startMusicPlayback() {
+      // Set volume to soft romantic level
+      audio.volume = 0.8;
+      
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setAudioPlayingState(true);
+          audioInitialized = true;
+        }).catch(err => {
+          console.warn("Autoplay notice / Path verification:", err);
+          // Retry on subsequent interaction
+          audioLabel.textContent = "Tocar para escuchar ♫";
+          setAudioPlayingState(false);
+        });
+      }
+    }
+
+    function setAudioPlayingState(isPlaying) {
+      if (isPlaying) {
+        audioLabel.textContent = "Reproduciendo ♫";
+        waveBars.forEach(b => b.classList.remove('paused'));
+      } else {
+        audioLabel.textContent = "Música pausada";
+        waveBars.forEach(b => b.classList.add('paused'));
+      }
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().then(() => setAudioPlayingState(true));
+      } else {
+        audio.pause();
+        setAudioPlayingState(false);
+      }
+    });
+
+    // Envelope Click Event (The mandatory first user interaction)
+    function openEnvelopeExperience() {
+      const envelope = document.getElementById('envelope-elem');
+      const seal = document.getElementById('wax-seal-btn');
+
+      // 1. Immediately fire music playback on user touch/click
+      startMusicPlayback();
+
+      // 2. Animate wax seal and top flap
+      seal.style.transform = 'translate(-50%, -50%) scale(0)';
+      seal.style.opacity = '0';
+      seal.style.pointerEvents = 'none';
+      envelope.classList.add('opened');
+
+      // Confetti burst on opening
+      if (window.confetti) {
+        confetti({
+          particleCount: 45,
+          spread: 70,
+          origin: { y: 0.65 },
+          colors: ['#e25576', '#ffb3c1', '#ffd166']
+        });
+      }
+
+      // 3. Move to Letter Scene smoothly
+      setTimeout(() => {
+        document.getElementById('scene-envelope').classList.add('hidden');
+        goToScene('scene-letter');
+      }, 850);
+    }
+
+    // Scene Navigation Manager
+    function goToScene(targetId) {
+      const scenes = ['scene-envelope', 'scene-letter', 'scene-polaroids', 'scene-final'];
+      scenes.forEach(id => {
+        const sceneEl = document.getElementById(id);
+        if (id === targetId) {
+          sceneEl.classList.remove('hidden');
+          setTimeout(() => {
+            sceneEl.classList.remove('scale-95', 'opacity-0');
+            sceneEl.classList.add('scale-100', 'opacity-100');
+          }, 30);
+        } else {
+          sceneEl.classList.add('scale-95', 'opacity-0');
+          setTimeout(() => {
+            sceneEl.classList.add('hidden');
+          }, 350);
+        }
+      });
+    }
+
+    function flipCard(cardInner) {
+      cardInner.classList.toggle('flipped');
+    }
+
+    function celebrateLove() {
+      const quote = document.getElementById('hidden-love-quote');
+      quote.classList.remove('opacity-0');
+
+      if (window.confetti) {
+        confetti({
+          particleCount: 90,
+          spread: 90,
+          origin: { y: 0.55 },
+          colors: ['#e25576', '#ff4d6d', '#ffd166', '#ffffff']
+        });
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ['#e25576', '#ff758f']
+          });
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ['#e25576', '#ff758f']
+          });
+        }, 250);
+      }
+    }
+
+    function restartLetter() {
+      const envelope = document.getElementById('envelope-elem');
+      const seal = document.getElementById('wax-seal-btn');
+      envelope.classList.remove('opened');
+      seal.style.transform = 'translate(-50%, -50%) scale(1)';
+      seal.style.opacity = '1';
+      seal.style.pointerEvents = 'auto';
+      document.getElementById('hidden-love-quote').classList.add('opacity-0');
+      goToScene('scene-envelope');
+    }
+
+    /* Floating Petals Canvas Simulation */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+
+    function handleResize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    class PetalParticle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = -15;
+        this.size = Math.random() * 8 + 6;
+        this.vy = Math.random() * 1.2 + 0.8;
+        this.vx = Math.random() * 1.4 - 0.7;
+        this.rot = Math.random() * 360;
+        this.rotSpeed = (Math.random() - 0.5) * 1.8;
+        this.alpha = Math.random() * 0.45 + 0.3;
+        this.color = Math.random() > 0.35 ? '#f497a9' : '#e03a62';
+      }
+      step() {
+        this.y += this.vy;
+        this.x += this.vx + Math.sin(this.y * 0.012) * 0.6;
+        this.rot += this.rotSpeed;
+        if (this.y > canvas.height + 20) this.reset();
+      }
+      render() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rot * Math.PI) / 180);
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(this.size / 2, -this.size / 2, this.size, 0);
+        ctx.quadraticCurveTo(this.size / 2, this.size, 0, 0);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 26; i++) {
+      petals.push(new PetalParticle());
+    }
+
+    function renderLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(p => {
+        p.step();
+        p.render();
+      });
+      requestAnimationFrame(renderLoop);
+    }
+    renderLoop();
+  </script>
+</body>
+</html>
